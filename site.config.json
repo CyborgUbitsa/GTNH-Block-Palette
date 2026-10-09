@@ -1,0 +1,14 @@
+{
+  "footer": {
+    "author": "CyborgUbitsa",
+    "note": "Fan-made tool, not affiliated with GT: New Horizons. Textures belong to their respective mod authors, according to CC licence. If you have desire to report a bug, send a feedback, or just saying thanks, my Discord for theese puorposes - cyborgubitsa",
+    "links": [
+      { "label": "GitHub", "url": "" },
+      { "label": "Discord", "url": "" }
+    ]
+  },
+  "report": {
+    "mode": "none",
+    "url": ""
+  }
+}

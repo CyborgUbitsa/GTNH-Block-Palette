@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTNH Block Palette</title>
+<meta name="description" content="Find GT: New Horizons blocks that match a colour.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='8' height='8' fill='%238a6f4d'/%3E%3Crect x='8' width='8' height='8' fill='%233f6fd1'/%3E%3Crect y='8' width='8' height='8' fill='%234f9d3a'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%23c4442f'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="{{CSS}}">
+</head>
+<body>
+<header class="hero">
+  <div class="hero-text">
+    <h1>GTNH Block Palette</h1>
+    <p class="lead">Pick a colour and get the GT: New Horizons blocks closest to it, from {{COUNT}} decorative blocks across {{MODS}} mods.</p>
+  </div>
+  <div class="pick">
+    <input type="color" id="color" value="#8a6f4d" aria-label="Pick a colour">
+    <input type="text" id="hex" value="#8a6f4d" spellcheck="false" maxlength="7" aria-label="Hex colour code">
+    <button id="eyedrop" title="Pick any colour from your screen" hidden>Eyedropper</button>
+    <button id="random" title="Try a random colour">Random</button>
+    <button id="helpBtn" class="ghost" title="How does this work?">How it works</button>
+  </div>
+</header>
+
+<details class="options" id="options">
+  <summary>Search options <span class="hint" id="optSummary"></span></summary>
+  <div class="opt-grid">
+    <div class="opt">
+      <label for="mode">Match by</label>
+      <select id="mode">
+        <option value="avg">Overall colour</option>
+        <option value="dom">Main colour inside the texture</option>
+      </select>
+      <p class="hint"><b>Overall</b> compares the block's colour as seen from a distance.
+        <b>Main colour</b> also finds blocks where your colour is a big part, such as red bricks with grey mortar.</p>
+    </div>
+    <div class="opt">
+      <label for="noise">Prefer smooth textures</label>
+      <input type="range" id="noise" min="0" max="100" value="30">
+      <p class="hint">Higher values rank plain, even textures above busy, speckled ones.</p>
+    </div>
+    <div class="opt">
+      <span class="label">Also include</span>
+      <label class="chk"><input type="checkbox" id="fTransparent"> Glass, leaves and other see-through blocks</label>
+      <label class="chk"><input type="checkbox" id="fAnimated" checked> Animated blocks</label>
+      <label class="chk"><input type="checkbox" id="fTinted"> Grey "tinted" textures</label>
+      <p class="hint">Some mods (GregTech materials, Extra Trees woods) store their textures in grey and colour them in game, so in this list they look grey.</p>
+    </div>
+    <div class="opt opt-wide">
+      <span class="label">Mods <span class="hint" id="modSummary"></span></span>
+      <div class="modtools">
+        <input type="search" id="modSearch" placeholder="Filter mods…">
+        <button id="modAll" class="small">Select all</button>
+        <button id="modNone" class="small">Select none</button>
+      </div>
+      <div id="modList"></div>
+    </div>
+  </div>
+</details>
+
+<p id="status" class="status" aria-live="polite"></p>
+<main id="results" class="results"></main>
+<div class="more-wrap"><button id="more" class="more" hidden>Show more matches</button></div>
+
+<footer class="foot" id="foot"></footer>
+
+<dialog id="help" class="modal">
+  <form method="dialog">
+    <h2>How it works</h2>
+    <ol>
+      <li><b>Pick a colour</b> with the colour box, type a hex code like <code>#8a6f4d</code>, or use the eyedropper to take one from your screen.</li>
+      <li><b>Browse the matches.</b> The best match comes first. The bar under each block shows its main colours and how much of the texture each one covers.</li>
+      <li><b>Click a block</b> to search for blocks that look like it. This is handy for building gradients and palettes.</li>
+    </ol>
+    <h3>Match quality</h3>
+    <p class="hint">How close a block is to your colour:</p>
+    <ul class="legend">
+      <li><span class="q q1">Near-identical</span> hard to tell apart</li>
+      <li><span class="q q2">Very close</span> differs only side by side</li>
+      <li><span class="q q3">Close</span> noticeable but similar</li>
+      <li><span class="q q4">Similar</span> same family of colour</li>
+      <li><span class="q q5">Loose</span> nearest available, but a different shade</li>
+    </ul>
+    <h3>Good to know</h3>
+    <ul>
+      <li>Each face of a block is listed on its own, so the top and side of a log are separate results.</li>
+      <li>Names are read from the mods' language files where possible; some are guessed from file names.</li>
+      <li>Machines, pipes, fluids and plants are filtered out. If something wrong slipped through, use <b>Report</b> on that block.</li>
+      <li>Your settings are kept in the page address, so you can share a link to your search.</li>
+    </ul>
+    <div class="actions"><button value="close" class="primary">Got it</button></div>
+  </form>
+</dialog>
+
+<dialog id="report" class="modal">
+  <form id="reportForm" method="dialog">
+    <h2>Report a block</h2>
+    <div class="report-head">
+      <div class="tilebox small"><div class="tile" id="rTile"></div></div>
+      <div><div class="name" id="rName"></div><div class="mod" id="rMod"></div></div>
+    </div>
+    <fieldset>
+      <legend>What's wrong?</legend>
+      <label class="chk"><input type="radio" name="reason" value="not_decorative" required> Not a decorative block (machine, pipe, part of a model)</label>
+      <label class="chk"><input type="radio" name="reason" value="wrong_name"> Wrong or confusing name</label>
+      <label class="chk"><input type="radio" name="reason" value="broken_texture"> Texture looks broken or cut off</label>
+      <label class="chk"><input type="radio" name="reason" value="wrong_mod"> Wrong mod</label>
+      <label class="chk"><input type="radio" name="reason" value="duplicate"> Duplicate of another block</label>
+      <label class="chk"><input type="radio" name="reason" value="other"> Something else</label>
+    </fieldset>
+    <label for="rComment" class="label">Details <span class="hint">(optional)</span></label>
+    <textarea id="rComment" maxlength="500" rows="3" placeholder="e.g. the real name is “Polished Basalt Bricks”"></textarea>
+    <p class="rstatus" id="rStatus" aria-live="polite"></p>
+    <textarea id="rCopy" class="copybox" readonly hidden></textarea>
+    <div class="actions">
+      <button value="cancel" formnovalidate class="ghost" id="rCancel">Cancel</button>
+      <button type="submit" class="primary" id="rSend">Send report</button>
+    </div>
+  </form>
+</dialog>
+
+<script>window.SITE_CONFIG = {{CONFIG}};</script>
+<script src="{{DATA}}"></script>
+<script src="{{APP}}"></script>
+</body>
+</html>

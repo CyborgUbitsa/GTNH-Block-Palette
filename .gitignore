@@ -1,0 +1,22 @@
+# Only the page code (web/, worker/, config) and the baked site (dist/) are
+# published. Mod jars, extracted textures and the bake pipeline stay local.
+
+# Inputs and intermediate data
+mods/
+data/
+.bake_cache/
+
+# Local bake pipeline
+extract_textures.py
+bytecode_scan.py
+classify.py
+bake.py
+rules.json
+
+# Python / editor noise
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
