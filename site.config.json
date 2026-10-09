@@ -1,10 +1,9 @@
 {
   "footer": {
     "author": "CyborgUbitsa",
-    "note": "Fan-made tool, not affiliated with GT: New Horizons. Textures belong to their respective mod authors, according to CC licence. If you have desire to report a bug, send a feedback, or just saying thanks, my Discord for theese puorposes - cyborgubitsa",
+    "note": "Fan-made tool, not affiliated with GT: New Horizons. Textures belong to their respective mod authors. To report a bug, send feedback or just say thanks, message me on Discord: cyborgubitsa",
     "links": [
-      { "label": "GitHub", "url": "" },
-      { "label": "Discord", "url": "" }
+      { "label": "GitHub", "url": "https://github.com/CyborgUbitsa/GTNH-Block-Palette" }
     ]
   },
   "report": {
